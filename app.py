@@ -23,7 +23,7 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                 # TASK 1: Add a dropdown list to enable Launch Site selection
                                 # The default select value is for ALL sites
                                 dcc.Dropdown(id='site-dropdown',
-                                             options=[{'label':ALL, 'value':ALL} for ALL in spacex_df['Launch Site'].unique()]
+                                             options=[{'label':ALL, 'value':ALL} for ALL in spacex_df['Launch Site'].unique()], value='Site'
                                              ),
                                 html.Br(),
 
@@ -40,6 +40,24 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                 # TASK 4: Add a scatter chart to show the correlation between payload and launch success
                                 html.Div(dcc.Graph(id='success-payload-scatter-chart')),
                                 ])
+@app.callback(Output(component_id='success-pie-chart', component_property='figure'),
+              Input(component_id='site-dropdown', component_property='value'))
+def get_pie_chart(entered_site):
+    filtered_df = spacex_df.groupby('Launch Site')['class'].sum().reset_index()
+    if entered_site == 'Site':
+        fig = px.pie(data_frame=filtered_df, values='class', 
+        names='Launch Site'
+       )
+        return fig
+    else:
+            one_site = spacex_df.loc[(spacex_df['Launch Site'] == entered_site)]
+            chosen_site = one_site.groupby('class')['class'].count()
+            chosen_site= chosen_site.to_frame()
+            fig = px.pie(values=[chosen_site['class'][1], chosen_site['class'][0]], names = ['Success', 'Failure'])
+            return fig
+            
+        
+   
 
 # TASK 2:
 # Add a callback function for `site-dropdown` as input, `success-pie-chart` as output
@@ -50,4 +68,4 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server()
+    app.run()
