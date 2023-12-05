@@ -18,6 +18,7 @@ for work in temp_payload:
     index_payload_dict.append(str(work))
 
 temp_payload = temp_payload.set_axis(index_payload_dict)
+
 payload_as_dict = temp_payload.to_dict()
 
 # Create a dash application
@@ -72,6 +73,7 @@ def get_scatter_graph(payload_slider, site_dropdown):
     if payload_slider == [min_payload, max_payload]:
         fig = px.scatter(data_frame= working_df, x = 'Payload Mass (kg)', y = 'class', color="Booster Version Category")
         return fig
+  
     
   
        
